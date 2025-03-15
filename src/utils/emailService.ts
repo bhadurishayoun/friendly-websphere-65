@@ -15,8 +15,13 @@ interface ContactFormData {
  */
 export const sendContactEmail = async (formData: ContactFormData): Promise<{ success: boolean; message: string }> => {
   try {
-    // This would point to your deployed serverless function or API endpoint
+    // UPDATE THIS URL with your actual deployed serverless function URL
+    // Examples:
+    // - Vercel: https://your-project-name.vercel.app/api/send-email
+    // - Netlify: https://your-site-name.netlify.app/.netlify/functions/send-email
     const apiUrl = 'https://your-api-endpoint.com/api/send-email';
+    
+    console.log('Sending email to:', apiUrl, 'with data:', formData);
     
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -27,8 +32,10 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<{ suc
     });
 
     const data = await response.json();
+    console.log('Email API response:', data);
 
     if (!response.ok) {
+      console.error('Email API error:', data);
       throw new Error(data.message || 'Failed to send message');
     }
 
@@ -40,7 +47,9 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<{ suc
     console.error('Error sending email:', error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to send message',
+      message: error instanceof Error 
+        ? `Error: ${error.message}` 
+        : 'Failed to send message. Check console for details.',
     };
   }
 }
