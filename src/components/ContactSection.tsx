@@ -1,18 +1,16 @@
-
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useAnimateOnScroll } from "@/hooks/useAnimateOnScroll";
 import { Send, Mail, MapPin, Linkedin, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import emailjs from '@emailjs/browser';
+import { sendContactEmail } from "@/utils/emailService";
 
 const ContactSection = () => {
   const titleRef = useAnimateOnScroll();
   const formRef = useAnimateOnScroll();
   const infoRef = useAnimateOnScroll();
-  const emailFormRef = useRef<HTMLFormElement>(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -28,23 +26,16 @@ const ContactSection = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!emailFormRef.current) return;
-    
     setIsSubmitting(true);
     
-    // Send email using EmailJS
-    emailjs.sendForm(
-      'service_lj6yzea', // Replace with your EmailJS service ID
-      'template_8q3rfpn', // Replace with your EmailJS template ID
-      emailFormRef.current,
-      'UMc8hPiOC-L06AZm1' // Replace with your EmailJS public key
-    )
-      .then((result) => {
-        console.log('Email sent successfully:', result.text);
-        setIsSubmitting(false);
+    try {
+      // Send email using Nodemailer API
+      const result = await sendContactEmail(formData);
+      
+      if (result.success) {
+        // Reset form on success
         setFormData({
           name: "",
           email: "",
@@ -54,14 +45,19 @@ const ContactSection = () => {
         toast.success("Message sent successfully!", {
           description: "Thank you for reaching out. I'll get back to you soon.",
         });
-      })
-      .catch((error) => {
-        console.error('Failed to send email:', error.text);
-        setIsSubmitting(false);
+      } else {
         toast.error("Failed to send message", {
-          description: "Please try again or contact me directly via email.",
+          description: result.message || "Please try again or contact me directly via email.",
         });
+      }
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      toast.error("Failed to send message", {
+        description: "Please try again or contact me directly via email.",
       });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -75,7 +71,7 @@ const ContactSection = () => {
         <div ref={formRef} className="card bg-card/50 backdrop-blur-sm">
           <h3 className="text-2xl font-display font-bold mb-6">Send a Message</h3>
           
-          <form ref={emailFormRef} onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium">
