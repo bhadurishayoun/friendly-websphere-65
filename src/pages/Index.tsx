@@ -9,6 +9,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import Chatbot from "@/components/Chatbot";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "sonner";
 
 const Index = () => {
   useEffect(() => {
@@ -62,6 +63,7 @@ const Index = () => {
         
         <Footer />
         <Chatbot />
+        <Toaster position="top-right" />
       </div>
     </ThemeProvider>
   );
