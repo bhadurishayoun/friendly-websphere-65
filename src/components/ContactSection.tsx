@@ -1,169 +1,19 @@
+
 import { useState } from "react";
 import { useAnimateOnScroll } from "@/hooks/useAnimateOnScroll";
-import { Send, Mail, MapPin, Linkedin, Github } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
-import { sendContactEmail } from "@/utils/emailService";
+import { Mail, MapPin, Linkedin, Github } from "lucide-react";
 
 const ContactSection = () => {
   const titleRef = useAnimateOnScroll();
-  const formRef = useAnimateOnScroll();
   const infoRef = useAnimateOnScroll();
   
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      // Validation
-      if (!formData.name.trim() || !formData.email.trim() || 
-          !formData.subject.trim() || !formData.message.trim()) {
-        toast.error("Please fill in all fields");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        toast.error("Please enter a valid email address");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      // Send form data
-      const result = await sendContactEmail(formData);
-      
-      if (result.success) {
-        // Reset form on success
-        setFormData({
-          name: "",
-          email: "",
-          subject: "",
-          message: "",
-        });
-        toast.success("Message sent successfully!", {
-          description: "Thank you for reaching out. I'll get back to you soon.",
-        });
-      } else {
-        toast.error("Failed to send message", {
-          description: result.message || "Please try again or contact me directly via email.",
-        });
-      }
-    } catch (error) {
-      console.error('Error in form submission:', error);
-      toast.error("Failed to send message", {
-        description: "Please try again or contact me directly via email.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <section id="contact" className="section-container py-24 bg-secondary/30">
       <h2 ref={titleRef} className="section-title gradient-text">
         Get In Touch
       </h2>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        {/* Contact Form */}
-        <div ref={formRef} className="card bg-card/50 backdrop-blur-sm">
-          <h3 className="text-2xl font-display font-bold mb-6">Send a Message</h3>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium">
-                  Your Name
-                </label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium">
-                  Your Email
-                </label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="john@example.com"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="subject" className="text-sm font-medium">
-                Subject
-              </label>
-              <Input
-                id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                placeholder="How can I help you?"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="message" className="text-sm font-medium">
-                Message
-              </label>
-              <Textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Your message here..."
-                rows={5}
-                required
-              />
-            </div>
-            
-            <Button type="submit" className="button-primary w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Message
-                </>
-              )}
-            </Button>
-          </form>
-        </div>
-        
+      <div className="max-w-4xl mx-auto">
         {/* Contact Information */}
         <div ref={infoRef} className="space-y-10">
           <div>
@@ -203,25 +53,37 @@ const ContactSection = () => {
           </div>
           
           <div>
-            <h3 className="text-xl font-display font-bold mb-4">Connect With Me</h3>
-            <div className="flex gap-4">
+            <h3 className="text-xl font-display font-bold mb-4">Let's Connect</h3>
+            <div className="flex flex-wrap gap-6">
+              <a
+                href="mailto:mb24043@students.iitmandi.ac.in"
+                className="flex items-center gap-2 px-5 py-3 bg-card rounded-lg hover:bg-primary hover:text-white transition-colors"
+                aria-label="Email contact"
+              >
+                <Mail className="h-5 w-5" />
+                <span>Email Me</span>
+              </a>
+              
               <a
                 href="https://linkedin.com/in/shayoun-bhaduri"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-4 bg-card rounded-full hover:bg-primary hover:text-white transition-colors"
+                className="flex items-center gap-2 px-5 py-3 bg-card rounded-lg hover:bg-primary hover:text-white transition-colors"
                 aria-label="LinkedIn profile"
               >
                 <Linkedin className="h-5 w-5" />
+                <span>LinkedIn</span>
               </a>
+              
               <a
                 href="https://github.com/bhadurishayoun"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-4 bg-card rounded-full hover:bg-primary hover:text-white transition-colors"
+                className="flex items-center gap-2 px-5 py-3 bg-card rounded-lg hover:bg-primary hover:text-white transition-colors"
                 aria-label="GitHub profile"
               >
                 <Github className="h-5 w-5" />
+                <span>GitHub</span>
               </a>
             </div>
           </div>
