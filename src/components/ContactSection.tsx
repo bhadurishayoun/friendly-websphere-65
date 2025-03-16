@@ -31,7 +31,23 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      // Send email using Nodemailer API
+      // Validation
+      if (!formData.name.trim() || !formData.email.trim() || 
+          !formData.subject.trim() || !formData.message.trim()) {
+        toast.error("Please fill in all fields");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        toast.error("Please enter a valid email address");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Send form data
       const result = await sendContactEmail(formData);
       
       if (result.success) {
