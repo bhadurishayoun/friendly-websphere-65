@@ -15,10 +15,14 @@ interface ContactFormData {
  */
 export const sendContactEmail = async (formData: ContactFormData): Promise<{ success: boolean; message: string }> => {
   try {
-    // UPDATE THIS URL with your actual deployed serverless function URL
+    // IMPORTANT: Replace this URL with your actual deployed serverless function URL
+    // after deploying your api/send-email.js function to your hosting platform
     // Examples:
     // - Vercel: https://your-project-name.vercel.app/api/send-email
     // - Netlify: https://your-site-name.netlify.app/.netlify/functions/send-email
+    // - Railway/Render: https://your-backend-name.railway.app/api/send-email
+    
+    // ⚠️ EMAIL WON'T WORK UNTIL YOU UPDATE THIS URL ⚠️
     const apiUrl = 'https://your-api-endpoint.com/api/send-email';
     
     console.log('Sending email to:', apiUrl, 'with data:', formData);

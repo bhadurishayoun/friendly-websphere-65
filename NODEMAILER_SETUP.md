@@ -54,8 +54,21 @@ To test the contact form:
 If you encounter issues:
 
 1. Verify that your environment variables are correctly set up
-2. Make sure your Gmail account has "Less secure app access" enabled or use an App Password
+2. Make sure your Gmail account has 2-Step Verification enabled and you're using an App Password
 3. Check the function logs on your deployment platform
 4. Verify that the API URL in `emailService.ts` is correct
-5. Test the API endpoint directly using a tool like Postman
+5. Test the API endpoint directly using a tool like Postman with this sample payload:
+   ```json
+   {
+     "name": "Test User",
+     "email": "test@example.com",
+     "subject": "Test Email",
+     "message": "This is a test message"
+   }
+   ```
 
+## Common Errors
+
+- **CORS errors**: Make sure your API endpoint has CORS enabled (already configured in the serverless function)
+- **Authentication failure**: Check if you're using the correct Gmail app password
+- **Network errors**: Verify the API URL is accessible from your deployed frontend
