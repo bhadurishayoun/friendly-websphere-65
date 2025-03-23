@@ -4,7 +4,7 @@ import { useAnimateOnScroll } from "@/hooks/useAnimateOnScroll";
 import { ExternalLink, Github, ArrowRight, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { fetchGitHubStats } from "@/utils/githubService";
+import { fetchGitHubStats, getGitHubUrl } from "@/utils/githubService";
 
 type ProjectItem = {
   title: string;
@@ -25,7 +25,6 @@ const projects: ProjectItem[] = [
     image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     tags: ["Regression", "Python", "Data Analysis", "Education"],
     accuracy: "92% accuracy",
-    github: "https://github.com/bhadurishayoun/student-gap-analysis",
   },
   {
     title: "Face Recognition of Partially Occluded Objects",
@@ -33,7 +32,6 @@ const projects: ProjectItem[] = [
     image: "https://images.unsplash.com/photo-1587918584555-438e9a9f8942?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     tags: ["Computer Vision", "Deep Learning", "CNN", "OpenCV"],
     accuracy: "98.93% accuracy",
-    github: "https://github.com/bhadurishayoun/face-recognition",
   },
   {
     title: "Weather Forecasting",
@@ -41,7 +39,6 @@ const projects: ProjectItem[] = [
     image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     tags: ["Random Forest", "Time Series", "Pandas", "Data Visualization"],
     accuracy: "95% accuracy",
-    github: "https://github.com/bhadurishayoun/weather-forecast",
   },
   {
     title: "Diversity Inclusion Dashboard",
@@ -55,7 +52,6 @@ const projects: ProjectItem[] = [
     description: "Designed a chatbot using Python and ML to enhance productivity and automate routine tasks.",
     image: "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     tags: ["NLP", "Python", "Machine Learning", "Chatbot"],
-    github: "https://github.com/bhadurishayoun/virtual-assistant",
   },
 ];
 
@@ -68,15 +64,21 @@ const ProjectsSection = () => {
     const fetchGitHubData = async () => {
       const updatedProjects = await Promise.all(
         projects.map(async (project) => {
-          if (project.github) {
+          const githubUrl = getGitHubUrl(project.title);
+          if (githubUrl) {
             const githubData = await fetchGitHubStats(project.title);
             if (githubData) {
               return {
                 ...project,
                 stars: githubData.stars,
-                language: githubData.language
+                language: githubData.language,
+                github: githubData.repoUrl // Use the secure URL from the API
               };
             }
+            return {
+              ...project,
+              github: githubUrl // Fallback to the constructed URL
+            };
           }
           return project;
         })
@@ -171,10 +173,22 @@ const ProjectsSection = () => {
                 </div>
                 
                 <div className="mt-auto">
-                  <Button variant="ghost" className="p-0 h-auto text-primary hover:text-primary/90 hover:bg-transparent group">
-                    <span>View details</span>
-                    <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-                  </Button>
+                  {project.github ? (
+                    <a 
+                      href={project.github} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-primary hover:text-primary/90 hover:underline"
+                    >
+                      <span>View on GitHub</span>
+                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+                    </a>
+                  ) : (
+                    <Button variant="ghost" className="p-0 h-auto text-primary hover:text-primary/90 hover:bg-transparent group">
+                      <span>View details</span>
+                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

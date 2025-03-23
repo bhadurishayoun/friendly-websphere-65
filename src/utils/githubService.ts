@@ -17,7 +17,7 @@ const projectToRepoMap: Record<string, string> = {
   "Virtual Assistant Chatbot": "virtual-assistant"
 };
 
-export const fetchGitHubStats = async (projectTitle: string): Promise<{stars: number, language: string} | null> => {
+export const fetchGitHubStats = async (projectTitle: string): Promise<{stars: number, language: string, repoUrl: string} | null> => {
   const repoName = projectToRepoMap[projectTitle];
   if (!repoName) return null;
   
@@ -28,10 +28,17 @@ export const fetchGitHubStats = async (projectTitle: string): Promise<{stars: nu
     const data: GitHubRepo = await response.json();
     return {
       stars: data.stargazers_count,
-      language: data.language
+      language: data.language,
+      repoUrl: data.html_url // Get the actual GitHub URL from the API
     };
   } catch (error) {
     console.error(`Error fetching GitHub data for ${projectTitle}:`, error);
     return null;
   }
+};
+
+export const getGitHubUrl = (projectTitle: string): string | null => {
+  const repoName = projectToRepoMap[projectTitle];
+  if (!repoName) return null;
+  return `https://github.com/bhadurishayoun/${repoName}`;
 };
