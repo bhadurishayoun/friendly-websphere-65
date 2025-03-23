@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, ChevronRight } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 
 const Navbar = () => {
@@ -63,18 +63,22 @@ const Navbar = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={`#${link.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.id);
-                }}
-                className={`nav-link ${activeSection === link.id ? "active" : ""}`}
-              >
-                {link.label}
-              </a>
+            {navLinks.map((link, index) => (
+              <div key={link.id} className="flex items-center">
+                <a
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.id);
+                  }}
+                  className={`nav-link ${activeSection === link.id ? "active" : ""}`}
+                >
+                  {link.label}
+                </a>
+                {index < navLinks.length - 1 && (
+                  <ChevronRight className="h-4 w-4 ml-2 text-foreground/40" />
+                )}
+              </div>
             ))}
           </nav>
           
@@ -126,17 +130,19 @@ const Navbar = () => {
       >
         <nav className="flex flex-col space-y-4 px-4 py-6">
           {navLinks.map((link) => (
-            <a
-              key={link.id}
-              href={`#${link.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection(link.id);
-              }}
-              className={`text-lg ${activeSection === link.id ? "text-primary font-medium" : "text-foreground/80"}`}
-            >
-              {link.label}
-            </a>
+            <div key={link.id} className="flex items-center">
+              <a
+                href={`#${link.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection(link.id);
+                }}
+                className={`text-lg ${activeSection === link.id ? "text-primary font-medium" : "text-foreground/80"}`}
+              >
+                {link.label}
+              </a>
+              <ChevronRight className="h-4 w-4 ml-2 text-foreground/40" />
+            </div>
           ))}
         </nav>
       </div>

@@ -1,8 +1,10 @@
 
+import { useEffect, useState } from "react";
 import { useAnimateOnScroll } from "@/hooks/useAnimateOnScroll";
-import { ExternalLink, Github, ArrowRight } from "lucide-react";
+import { ExternalLink, Github, ArrowRight, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { fetchGitHubStats } from "@/utils/githubService";
 
 type ProjectItem = {
   title: string;
@@ -12,6 +14,8 @@ type ProjectItem = {
   accuracy?: string;
   github?: string;
   demo?: string;
+  stars?: number;
+  language?: string;
 };
 
 const projects: ProjectItem[] = [
@@ -58,6 +62,31 @@ const projects: ProjectItem[] = [
 const ProjectsSection = () => {
   const titleRef = useAnimateOnScroll();
   const descriptionRef = useAnimateOnScroll();
+  const [projectsWithGitHubData, setProjectsWithGitHubData] = useState<ProjectItem[]>(projects);
+  
+  useEffect(() => {
+    const fetchGitHubData = async () => {
+      const updatedProjects = await Promise.all(
+        projects.map(async (project) => {
+          if (project.github) {
+            const githubData = await fetchGitHubStats(project.title);
+            if (githubData) {
+              return {
+                ...project,
+                stars: githubData.stars,
+                language: githubData.language
+              };
+            }
+          }
+          return project;
+        })
+      );
+      
+      setProjectsWithGitHubData(updatedProjects);
+    };
+    
+    fetchGitHubData();
+  }, []);
   
   return (
     <section id="projects" className="section-container py-24 bg-secondary/30">
@@ -70,7 +99,7 @@ const ProjectsSection = () => {
       </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projects.map((project, index) => {
+        {projectsWithGitHubData.map((project, index) => {
           const projectRef = useAnimateOnScroll();
           return (
             <div key={index} ref={projectRef} className="card group h-full flex flex-col">
@@ -109,12 +138,28 @@ const ProjectsSection = () => {
               </div>
               
               <div className="flex-1 flex flex-col">
-                <h3 className="text-xl font-medium mb-2">{project.title}</h3>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-medium">{project.title}</h3>
+                  {project.stars !== undefined && (
+                    <div className="flex items-center text-sm text-amber-500">
+                      <Star className="h-4 w-4 mr-1 fill-amber-500" />
+                      <span>{project.stars}</span>
+                    </div>
+                  )}
+                </div>
+                
                 {project.accuracy && (
                   <Badge variant="outline" className="mb-2 self-start text-primary">
                     {project.accuracy}
                   </Badge>
                 )}
+                
+                {project.language && (
+                  <Badge variant="outline" className="mb-2 ml-2 self-start">
+                    {project.language}
+                  </Badge>
+                )}
+                
                 <p className="text-foreground/80 mb-4 flex-1">{project.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
